@@ -6,13 +6,13 @@ const CRISIS_STATS = [
   { number: "764", label: "personas se quitaron la vida en Uruguay en 2024", source: "MSP Uruguay, 2025" },
   { number: "7°", label: "lugar mundial en tasa de suicidio según la OMS", source: "OMS, 2025" },
   { number: "16", label: "uruguayos mueren por suicidio cada semana", source: "OPS, 2024" },
-  { number: "2ª", label: "causa de muerte en jóvenes de 15 a 29 años", source: "MSP, 2023" },
+  { number: "2ª", label: "causa de muerte entre adultos menores de 45 años", source: "MSP, 2023" },
 ];
 
 const YOUTH_STATS = [
-  { value: "1 de 4", text: "adolescentes dice sentirse triste o desesperado", emoji: "😞" },
-  { value: "47%", text: "de los intentos de suicidio son jóvenes de 15 a 29", emoji: "📉" },
-  { value: "33.2", text: "por 100k — tasa récord histórica en 20-24 años", emoji: "⚠️" },
+  { value: "1 de 4", text: "personas dice sentirse triste o desesperada con frecuencia", emoji: "😞" },
+  { value: "+30%", text: "aumento de consultas por ansiedad post-pandemia", emoji: "📉" },
+  { value: "24/7", text: "la angustia no avisa — llega a cualquier hora y a cualquier edad", emoji: "⏰" },
   { value: "<20%", text: "recibe atención psicológica oportuna", emoji: "🚪" },
 ];
 
@@ -32,6 +32,34 @@ const COMPARISON_FEATURES = [
   { feature: "Detecta crisis sin palabras exactas", numa: true, others: false },
   { feature: "Líneas de emergencia integradas", numa: true, others: false },
   { feature: "Listas de consejos automáticos", numa: false, others: true },
+];
+
+const WEEK_MOODS = [
+  { day: "M", emoji: "·", level: 0 },
+  { day: "M", emoji: "🙂", level: 3 },
+  { day: "J", emoji: "·", level: 0 },
+  { day: "V", emoji: "🙂", level: 3 },
+  { day: "S", emoji: "·", level: 0 },
+  { day: "D", emoji: "·", level: 0 },
+  { day: "L", emoji: "😄", level: 4 },
+];
+
+const RECURRING_TOPICS = [
+  { icon: "💼", label: "Trabajo", count: "5x" },
+  { icon: "😴", label: "Sueño", count: "3x" },
+  { icon: "👨‍👩‍👧", label: "Familia", count: "2x" },
+];
+
+const NUMA_PATTERNS = [
+  { icon: "📅", title: "Los viernes son tus mejores días", desc: "Después de hablar de 'trabajo', tu ánimo mejora notablemente." },
+  { icon: "🌬️", title: "La respiración 4-7-8 te funciona", desc: "Es la práctica que más se correlaciona con tus días buenos." },
+  { icon: "🌙", title: "Dormir poco te afecta al día siguiente", desc: "Detectado en 5 semanas seguidas. ¿Querés que te recuerde tu rutina de sueño?" },
+];
+
+const MONTH_MOMENTS = [
+  { date: "12 ABR", title: "Conversación difícil", desc: "Hablaste con tu jefe. Tu ánimo mejoró los 4 días siguientes.", color: "#6EC177" },
+  { date: "8 ABR", title: "Primera racha de 7 días", desc: "Completaste una semana entera de check-ins.", color: "#7B6BE8" },
+  { date: "3 ABR", title: "Nueva práctica", desc: "Descubriste 'Lugar Seguro'. La hiciste 4 veces desde entonces.", color: "#5A8FB8" },
 ];
 
 const CHAT_TONE = {
@@ -118,6 +146,51 @@ function scrollTo(id) {
   if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
+// Parallax pandas flotando en el fondo
+const BG_PANDAS = [
+  { size: 70,  startTop: 12,  amplitudeX: 40, speedX: 0.18, speedY: 0.35, phase: 0,   opacity: 0.09, rotSpeed: 0.03 },
+  { size: 120, startTop: 38,  amplitudeX: 60, speedX: 0.12, speedY: 0.22, phase: 2.1, opacity: 0.07, rotSpeed: 0.02 },
+  { size: 55,  startTop: 62,  amplitudeX: 90, speedX: 0.24, speedY: 0.45, phase: 4.3, opacity: 0.10, rotSpeed: 0.05 },
+  { size: 95,  startTop: 85,  amplitudeX: 50, speedX: 0.15, speedY: 0.28, phase: 1.2, opacity: 0.08, rotSpeed: 0.04 },
+  { size: 45,  startTop: 110, amplitudeX: 70, speedX: 0.28, speedY: 0.5,  phase: 3.5, opacity: 0.11, rotSpeed: 0.06 },
+  { size: 80,  startTop: 135, amplitudeX: 55, speedX: 0.16, speedY: 0.3,  phase: 5.1, opacity: 0.08, rotSpeed: 0.025 },
+  { size: 60,  startTop: 160, amplitudeX: 75, speedX: 0.22, speedY: 0.4,  phase: 0.8, opacity: 0.09, rotSpeed: 0.045 },
+];
+
+function BackgroundPandas({ scrollY }) {
+  const vw = typeof window !== "undefined" ? window.innerWidth : 1200;
+  return (
+    <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 2, overflow: "hidden", mixBlendMode: "screen" }}>
+      {BG_PANDAS.map((p, i) => {
+        const baseLeft = (i % 2 === 0 ? 0.18 : 0.78) * vw;
+        const wiggle = Math.sin(scrollY * 0.005 + p.phase) * p.amplitudeX;
+        const x = baseLeft + wiggle - p.size / 2;
+        const y = p.startTop * (typeof window !== "undefined" ? window.innerHeight : 800) / 100 - scrollY * p.speedY;
+        const rot = Math.sin(scrollY * p.rotSpeed + p.phase) * 18;
+        return (
+          <img
+            key={i}
+            src={pandaImg}
+            alt=""
+            style={{
+              position: "absolute",
+              left: 0,
+              top: 0,
+              width: p.size,
+              height: p.size,
+              transform: `translate3d(${x}px, ${y}px, 0) rotate(${rot}deg)`,
+              opacity: p.opacity,
+              borderRadius: p.size * 0.22,
+              filter: "blur(0.5px)",
+              willChange: "transform",
+            }}
+          />
+        );
+      })}
+    </div>
+  );
+}
+
 // ─── Main ────────────────────────────────────────────────
 export default function App() {
   const [scrollY, setScrollY] = useState(0);
@@ -129,11 +202,14 @@ export default function App() {
 
   return (
     <div style={S.root}>
+      <BackgroundPandas scrollY={scrollY} />
+
       {/* NAV */}
       <nav style={{ ...S.nav, background: scrollY > 50 ? "rgba(10,10,12,.88)" : "transparent", backdropFilter: scrollY > 50 ? "blur(16px)" : "none" }}>
         <span style={S.navLogo} onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>🐼 Numa</span>
         <div style={S.navLinks}>
           <a onClick={() => scrollTo("diferente")} style={S.navLink}>Diferente</a>
+          <a onClick={() => scrollTo("estado")} style={S.navLink}>Mi Estado</a>
           <a onClick={() => scrollTo("crisis")} style={S.navLink}>La Crisis</a>
           <a onClick={() => scrollTo("seguridad")} style={S.navLink}>Seguridad</a>
         </div>
@@ -144,7 +220,7 @@ export default function App() {
         <div style={S.heroGlow} />
         <div style={S.heroContent}>
           <img src={pandaImg} alt="Numa" style={{ width: 100, height: "auto", borderRadius: 24, marginBottom: 20, animation: "float 4s ease-in-out infinite" }} />
-          <div style={S.heroTag}>Compañero emocional para jóvenes</div>
+          <div style={S.heroTag}>Compañero emocional para toda edad</div>
           <h1 style={S.heroTitle}>
             Hay un espacio vacío entre{" "}
             <span style={S.hl}>"estoy mal"</span> y{" "}
@@ -211,10 +287,117 @@ export default function App() {
       </section>
 
       {/* ══════════════════════════════════════════════════════ */}
-      {/* PILAR 2 — LA CRISIS                                   */}
+      {/* PILAR 2 — MI ESTADO                                    */}
+      {/* ══════════════════════════════════════════════════════ */}
+      <section id="estado" style={{ ...S.sec, background: "linear-gradient(180deg,#0a0a0c 0%,#0c1410 50%,#0a0a0c 100%)" }}>
+        <div style={{ ...S.tag, color: "#6EC177" }}>PILAR 2 — MI ESTADO</div>
+        <h2 style={S.title}>
+          Numa no solo escucha.<br />
+          También <span style={S.hl}>te muestra cómo estuviste</span>.
+        </h2>
+        <p style={S.sub}>
+          Cada conversación deja una huella. Numa la transforma en algo visible:<br />
+          cómo te sentiste cada día, qué temas volvieron, qué patrones aparecen.
+        </p>
+
+        {/* Mock dashboard */}
+        <div style={S.estadoMock}>
+          <div style={S.estadoHeader}>
+            <span style={S.estadoTab}>💬 Chat</span>
+            <span style={{ ...S.estadoTab, ...S.estadoTabOn }}>📊 Mi estado</span>
+            <span style={S.estadoTab}>💭 Feedback</span>
+          </div>
+
+          <div style={S.estadoBlock}>
+            <div style={S.estadoBlockTitle}>Tu estado</div>
+            <div style={S.estadoBlockSub}>Últimos 30 días</div>
+            <div style={S.estadoNote}>
+              Este mes tuviste más días buenos que difíciles. El tema que más apareció fue <strong style={{ color: "#6EC177" }}>'trabajo'</strong>.
+            </div>
+          </div>
+
+          {/* Week mood */}
+          <div style={S.estadoCard}>
+            <div style={S.estadoCardTitle}>ESTA SEMANA</div>
+            <div style={S.weekRow}>
+              {WEEK_MOODS.map((d, i) => (
+                <div key={i} style={S.weekCol}>
+                  <div style={{ ...S.weekDot, background: d.level ? "#6EC177" : "rgba(255,255,255,.08)", transform: d.level ? `scale(${0.7 + d.level * 0.12})` : "scale(.5)" }} />
+                  <div style={S.weekDay}>{d.day}</div>
+                  <div style={{ fontSize: 13, marginTop: 2, opacity: d.level ? 1 : 0 }}>{d.emoji}</div>
+                </div>
+              ))}
+            </div>
+            <div style={S.weekLegend}>
+              <span>😔 Difícil</span><span>🙂 Normal</span><span>😄 Bueno</span>
+            </div>
+          </div>
+
+          {/* Recurring topics */}
+          <div style={S.estadoCard}>
+            <div style={S.estadoCardTitle}>TEMAS RECURRENTES</div>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              {RECURRING_TOPICS.map((t, i) => (
+                <div key={i} style={S.topicChip}>
+                  <span>{t.icon}</span>
+                  <span style={{ fontWeight: 600 }}>{t.label}</span>
+                  <span style={S.topicCount}>{t.count}</span>
+                </div>
+              ))}
+            </div>
+            <div style={S.estadoQuote}>
+              "Está pasando por un momento difícil con su jefe en el trabajo, pero hoy habló con él y se sintió un poco mejor."
+            </div>
+          </div>
+        </div>
+
+        {/* Patterns */}
+        <div style={{ marginTop: 56 }}>
+          <h3 style={S.demoH}>Patrones que Numa detecta por vos</h3>
+          <p style={S.demoP}>
+            Sin que tengas que hacer nada. Numa conecta lo que decís, lo que hacés y cómo te sentís.
+          </p>
+          <div style={S.patternsGrid}>
+            {NUMA_PATTERNS.map((p, i) => (
+              <div key={i} style={S.patternCard}>
+                <div style={S.patternBadge}>NUMA NOTÓ</div>
+                <div style={{ fontSize: 26, marginBottom: 10 }}>{p.icon}</div>
+                <div style={S.patternTitle}>{p.title}</div>
+                <div style={S.patternDesc}>{p.desc}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Month timeline */}
+        <div style={{ marginTop: 56 }}>
+          <h3 style={S.demoH}>Momentos que importan</h3>
+          <p style={S.demoP}>
+            Numa marca lo significativo: rachas, conversaciones difíciles, prácticas nuevas.
+          </p>
+          <div style={S.timeline}>
+            {MONTH_MOMENTS.map((m, i) => (
+              <div key={i} style={S.tlRow}>
+                <div style={S.tlSide}>
+                  <div style={{ ...S.tlDot, background: m.color }} />
+                  {i < MONTH_MOMENTS.length - 1 && <div style={S.tlLine} />}
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={S.tlDate}>{m.date}</div>
+                  <div style={S.tlTitle}>{m.title}</div>
+                  <div style={S.tlDesc}>{m.desc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════ */}
+      {/* PILAR 3 — LA CRISIS                                   */}
       {/* ══════════════════════════════════════════════════════ */}
       <section id="crisis" style={{ ...S.sec, background: "linear-gradient(180deg,#0a0a0c 0%,#1a0a0a 50%,#0a0a0c 100%)" }}>
-        <div style={{ ...S.tag, color: "#E85D5D" }}>PILAR 2 — EL PROBLEMA</div>
+        <div style={{ ...S.tag, color: "#E85D5D" }}>PILAR 3 — EL PROBLEMA</div>
         <h2 style={S.title}>
           Uruguay tiene una crisis<br />
           de salud mental <span style={{ color: "#E85D5D" }}>silenciosa</span>
@@ -239,8 +422,8 @@ export default function App() {
 
         {/* Youth */}
         <div style={{ textAlign: "center", marginBottom: 32 }}>
-          <span style={S.youthTag}>FOCO: JÓVENES</span>
-          <h3 style={S.youthTitle}>La franja que más sufre es la que menos ayuda recibe</h3>
+          <span style={S.youthTag}>UN PROBLEMA TRANSVERSAL</span>
+          <h3 style={S.youthTitle}>No discrimina edad: afecta a adolescentes, adultos y mayores</h3>
         </div>
         <div style={S.youthGrid}>
           {YOUTH_STATS.map((s, i) => (
@@ -254,7 +437,7 @@ export default function App() {
 
         {/* Gap Timeline */}
         <div style={{ marginTop: 56 }}>
-          <h3 style={{ ...S.demoH, marginBottom: 32 }}>El camino de un joven que sufre en silencio</h3>
+          <h3 style={{ ...S.demoH, marginBottom: 32 }}>El camino de alguien que sufre en silencio</h3>
           <div style={{ maxWidth: 520, margin: "0 auto" }}>
             {GAP_ITEMS.map((it, i) => (
               <div key={i} style={{ display: "flex", gap: 14, marginBottom: 24, alignItems: "flex-start" }}>
@@ -364,7 +547,7 @@ const S = {
   heroTitle: { fontSize: "clamp(26px,4.5vw,44px)", fontWeight: 800, lineHeight: 1.2, letterSpacing: -1.5, marginBottom: 18, color: "#fff" },
   heroSub: { fontSize: "clamp(13px,1.8vw,16px)", color: "#999", lineHeight: 1.7 },
 
-  sec: { padding: "90px 24px", maxWidth: 880, margin: "0 auto" },
+  sec: { padding: "90px 24px", maxWidth: 880, margin: "0 auto", position: "relative", zIndex: 1 },
   tag: { fontSize: 11, fontWeight: 700, letterSpacing: 2.5, textTransform: "uppercase", color: "#6EC177", marginBottom: 14, textAlign: "center" },
   title: { fontSize: "clamp(22px,3.8vw,38px)", fontWeight: 800, lineHeight: 1.2, letterSpacing: -1, textAlign: "center", marginBottom: 14, color: "#fff" },
   sub: { fontSize: "clamp(13px,1.6vw,15px)", color: "#888", lineHeight: 1.7, textAlign: "center", maxWidth: 580, margin: "0 auto 44px" },
@@ -409,4 +592,39 @@ const S = {
 
   safetyGrid: { display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(190px,1fr))", gap: 14 },
   safetyCard: { background: "rgba(232,165,93,.05)", border: "1px solid rgba(232,165,93,.12)", borderRadius: 14, padding: "22px 18px" },
+
+  // ── Mi estado
+  estadoMock: { maxWidth: 520, margin: "0 auto", background: "rgba(255,255,255,.02)", border: "1px solid rgba(255,255,255,.08)", borderRadius: 18, padding: 18, display: "flex", flexDirection: "column", gap: 14 },
+  estadoHeader: { display: "flex", gap: 6, padding: 4, background: "rgba(110,193,119,.06)", borderRadius: 12 },
+  estadoTab: { flex: 1, textAlign: "center", padding: "8px 10px", fontSize: 12, color: "#888", borderRadius: 9, fontWeight: 600 },
+  estadoTabOn: { background: "#fff", color: "#1a1a1a", boxShadow: "0 1px 4px rgba(0,0,0,.15)" },
+  estadoBlock: { padding: "4px 4px" },
+  estadoBlockTitle: { fontSize: 22, fontWeight: 800, color: "#fff", letterSpacing: -.5 },
+  estadoBlockSub: { fontSize: 12, color: "#6EC177", marginTop: 2, marginBottom: 12 },
+  estadoNote: { background: "#2d3a32", color: "#fff", padding: "14px 16px", borderRadius: 12, fontSize: 13, lineHeight: 1.55 },
+  estadoCard: { background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.06)", borderRadius: 14, padding: "16px 18px" },
+  estadoCardTitle: { fontSize: 11, fontWeight: 700, color: "#6EC177", letterSpacing: 1.5, marginBottom: 14 },
+  weekRow: { display: "flex", justifyContent: "space-between", alignItems: "flex-end", padding: "6px 4px 4px", height: 80 },
+  weekCol: { display: "flex", flexDirection: "column", alignItems: "center", gap: 6, flex: 1 },
+  weekDot: { width: 14, height: 14, borderRadius: "50%", transition: "transform .3s" },
+  weekDay: { fontSize: 11, color: "#888", fontWeight: 600, marginTop: 4 },
+  weekLegend: { display: "flex", justifyContent: "space-between", marginTop: 10, fontSize: 10.5, color: "#888" },
+  topicChip: { display: "inline-flex", alignItems: "center", gap: 6, padding: "7px 12px", background: "rgba(110,193,119,.08)", border: "1px solid rgba(110,193,119,.18)", borderRadius: 20, fontSize: 12.5, color: "#ddd" },
+  topicCount: { fontSize: 10, color: "#6EC177", fontWeight: 700, padding: "1px 6px", background: "rgba(110,193,119,.15)", borderRadius: 8 },
+  estadoQuote: { fontSize: 12, color: "#999", fontStyle: "italic", marginTop: 14, lineHeight: 1.55, paddingTop: 10, borderTop: "1px dashed rgba(255,255,255,.06)" },
+
+  patternsGrid: { display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 14 },
+  patternCard: { background: "rgba(110,193,119,.04)", border: "1px solid rgba(110,193,119,.15)", borderRadius: 14, padding: "20px 18px", position: "relative" },
+  patternBadge: { display: "inline-block", fontSize: 9.5, fontWeight: 800, color: "#6EC177", letterSpacing: 1.8, padding: "3px 8px", background: "rgba(110,193,119,.1)", borderRadius: 6, marginBottom: 10 },
+  patternTitle: { fontSize: 15, fontWeight: 700, color: "#fff", marginBottom: 6, lineHeight: 1.35 },
+  patternDesc: { fontSize: 12.5, color: "#aaa", lineHeight: 1.55 },
+
+  timeline: { maxWidth: 480, margin: "0 auto" },
+  tlRow: { display: "flex", gap: 14, paddingBottom: 4 },
+  tlSide: { display: "flex", flexDirection: "column", alignItems: "center", paddingTop: 6 },
+  tlDot: { width: 11, height: 11, borderRadius: "50%", flexShrink: 0 },
+  tlLine: { width: 2, flex: 1, background: "rgba(255,255,255,.08)", marginTop: 4, minHeight: 36 },
+  tlDate: { fontSize: 10.5, color: "#6EC177", fontWeight: 700, letterSpacing: 1.2, marginBottom: 4 },
+  tlTitle: { fontSize: 14.5, fontWeight: 700, color: "#fff", marginBottom: 4 },
+  tlDesc: { fontSize: 12.5, color: "#999", lineHeight: 1.5, marginBottom: 18 },
 };

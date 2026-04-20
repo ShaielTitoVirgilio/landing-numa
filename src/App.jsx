@@ -146,6 +146,206 @@ function scrollTo(id) {
   if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
+// ─── Phone carousel screens ──────────────────────────────
+const PHONE_SCREENS = [
+  {
+    tab: "chat",
+    title: "Recuerda quién sos",
+    caption: "Numa arranca la conversación con tu contexto, no desde cero.",
+    content: "chat_morning",
+  },
+  {
+    tab: "chat",
+    title: "Sugiere, no sermonea",
+    caption: "Cuando detecta que algo pesa, ofrece una práctica corta — vos decidís.",
+    content: "chat_breathing",
+  },
+  {
+    tab: "estado",
+    title: "Tu mes, sin calificarte",
+    caption: "Racha, minutos y temas. Sin puntajes ni juicios sobre cómo te sentiste.",
+    content: "estado",
+  },
+  {
+    tab: "chat",
+    title: "Reacciona como amigo",
+    caption: "Celebra lo bueno, pregunta lo importante. Sin listas automáticas.",
+    content: "chat_exam",
+  },
+];
+
+function PhoneScreen({ content }) {
+  if (content === "chat_morning") {
+    return (
+      <>
+        <PhoneTabs active="chat" />
+        <div style={PS.chatScroll}>
+          <div style={PS.chatTime}>Hoy · 9:12</div>
+          <div style={{ ...PS.bubble, ...PS.bubbleBot }}>Buen día, Martín 🌿 ¿Cómo amaneciste hoy?</div>
+          <div style={{ ...PS.bubble, ...PS.bubbleUser }}>Medio ansioso. Dormí mal otra vez pensando en la reunión.</div>
+          <div style={{ ...PS.bubble, ...PS.bubbleBot }}>Gracias por contarme. Es el cuarto día que mencionás la reunión — parece que te está pesando.</div>
+        </div>
+      </>
+    );
+  }
+  if (content === "chat_breathing") {
+    return (
+      <>
+        <PhoneTabs active="chat" />
+        <div style={PS.chatScroll}>
+          <div style={{ ...PS.bubble, ...PS.bubbleBot }}>¿Querés que hagamos una respiración corta antes? Tengo 4-7-8 de 2 min, te ayudó bien la semana pasada.</div>
+          <div style={PS.chipsRow}>
+            <div style={PS.chip}>Sí, dale 🌿</div>
+            <div style={PS.chip}>Prefiero hablar</div>
+            <div style={PS.chip}>Ahora no</div>
+          </div>
+          <div style={{ ...PS.bubble, ...PS.bubbleUser }}>Dale, mejor respirar.</div>
+          <div style={PS.exerciseCard}>
+            <div style={PS.exerciseIcon}>🌬️</div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontWeight: 700, fontSize: 13.5, color: "#2d3a32" }}>Respiración 4-7-8</div>
+              <div style={{ fontSize: 11.5, color: "#6a7a6d", marginTop: 2 }}>2 minutos · Ansiedad</div>
+            </div>
+            <div style={{ color: "#6EC177", fontSize: 18 }}>›</div>
+          </div>
+        </div>
+      </>
+    );
+  }
+  if (content === "chat_exam") {
+    return (
+      <>
+        <PhoneTabs active="chat" />
+        <div style={PS.chatScroll}>
+          <div style={{ textAlign: "center", marginBottom: 8 }}>
+            <img src={pandaImg} alt="" style={{ width: 70, borderRadius: 14 }} />
+          </div>
+          <div style={{ ...PS.bubble, ...PS.bubbleBot }}>Che, ¿cómo estás? ¿Qué onda?</div>
+          <div style={{ ...PS.bubble, ...PS.bubbleUser }}>tuve el examen hoy</div>
+          <div style={{ ...PS.bubble, ...PS.bubbleBot }}>¿Cómo te fue? ¿Te sentiste bien preparado?</div>
+          <div style={{ ...PS.bubble, ...PS.bubbleUser }}>me fue re bien</div>
+          <div style={{ ...PS.bubble, ...PS.bubbleBot }}>¡Genial! Me alegra mucho. ¿Qué te pareció el examen? ¿Más fácil o más difícil de lo que esperabas?</div>
+        </div>
+      </>
+    );
+  }
+  // estado
+  return (
+    <>
+      <PhoneTabs active="estado" />
+      <div style={PS.chatScroll}>
+        <div style={{ fontSize: 22, fontWeight: 800, color: "#1f2a22", letterSpacing: -.5 }}>Tu estado</div>
+        <div style={{ fontSize: 12, color: "#6a7a6d", marginTop: 2, marginBottom: 14 }}>Tu historia de abril</div>
+        <div style={PS.ringsRow}>
+          {[
+            { value: "28", label: "RACHA", color: "#6EC177" },
+            { value: "142", label: "MIN", color: "#5A8FB8" },
+            { value: "12", label: "TEMAS", color: "#7B6BE8" },
+          ].map((r, i) => (
+            <div key={i} style={PS.ringCard}>
+              <div style={{ ...PS.ring, borderColor: `${r.color}55`, borderTopColor: r.color }} />
+              <div style={PS.ringInner}>
+                <div style={{ fontSize: 17, fontWeight: 800, color: "#1f2a22" }}>{r.value}</div>
+                <div style={{ fontSize: 9, fontWeight: 700, color: "#6a7a6d", letterSpacing: 1 }}>{r.label}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div style={PS.numaNoto}>
+          <div style={{ fontSize: 9.5, fontWeight: 800, color: "#a8c4ad", letterSpacing: 1.5, marginBottom: 6 }}>NUMA NOTÓ</div>
+          <div style={{ fontSize: 12.5, color: "#fff", lineHeight: 1.5 }}>
+            Los viernes aparecen como tus mejores días. Y después de hablar de 'trabajo', notamos un alivio en tu tono.
+          </div>
+        </div>
+        <div style={PS.momentsBox}>
+          <div style={{ fontSize: 9.5, fontWeight: 800, color: "#6a7a6d", letterSpacing: 1.5, marginBottom: 10 }}>MOMENTOS DE ESTE MES</div>
+          <div style={PS.tlItem}>
+            <div style={{ ...PS.tlDotSm, background: "#6EC177" }} />
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 10, color: "#6EC177", fontWeight: 700 }}>12 ABR</div>
+              <div style={{ fontSize: 12.5, fontWeight: 700, color: "#1f2a22" }}>Conversación difícil</div>
+              <div style={{ fontSize: 11, color: "#6a7a6d", marginTop: 2 }}>Hablaste con tu jefe.</div>
+            </div>
+          </div>
+          <div style={PS.tlItem}>
+            <div style={{ ...PS.tlDotSm, background: "#7B6BE8" }} />
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 10, color: "#7B6BE8", fontWeight: 700 }}>8 ABR</div>
+              <div style={{ fontSize: 12.5, fontWeight: 700, color: "#1f2a22" }}>Primera racha de 7 días</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+function PhoneTabs({ active }) {
+  const tabs = [
+    { id: "chat", icon: "💬", label: "Chat" },
+    { id: "estado", icon: "📊", label: "Mi estado" },
+    { id: "fb", icon: "💭", label: "Feedback" },
+  ];
+  return (
+    <div style={PS.tabBar}>
+      {tabs.map(t => (
+        <div key={t.id} style={{ ...PS.tab, ...(active === t.id ? PS.tabOn : {}) }}>
+          <span style={{ fontSize: 11 }}>{t.icon}</span>
+          <span>{t.label}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function PhoneCarousel() {
+  const [idx, setIdx] = useState(0);
+  const [paused, setPaused] = useState(false);
+
+  useEffect(() => {
+    if (paused) return;
+    const t = setInterval(() => setIdx(i => (i + 1) % PHONE_SCREENS.length), 4200);
+    return () => clearInterval(t);
+  }, [paused]);
+
+  const screen = PHONE_SCREENS[idx];
+
+  return (
+    <div style={PS.wrap} onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
+      <div style={PS.phone}>
+        <div style={PS.notch} />
+        <div style={PS.statusBar}>
+          <span>9:41</span>
+          <span style={{ display: "flex", gap: 4 }}><span>📶</span><span>🔋</span></span>
+        </div>
+        <div key={idx} style={PS.screen}>
+          <PhoneScreen content={screen.content} />
+        </div>
+      </div>
+
+      <div style={PS.meta}>
+        <div style={PS.metaTitle}>{screen.title}</div>
+        <div style={PS.metaCaption}>{screen.caption}</div>
+        <div style={PS.dots}>
+          {PHONE_SCREENS.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setIdx(i)}
+              style={{ ...PS.dot, ...(i === idx ? PS.dotOn : {}) }}
+              aria-label={`Pantalla ${i + 1}`}
+            />
+          ))}
+        </div>
+        <div style={PS.arrows}>
+          <button style={PS.arrow} onClick={() => setIdx((idx - 1 + PHONE_SCREENS.length) % PHONE_SCREENS.length)}>←</button>
+          <span style={PS.counter}>{idx + 1} / {PHONE_SCREENS.length}</span>
+          <button style={PS.arrow} onClick={() => setIdx((idx + 1) % PHONE_SCREENS.length)}>→</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // Parallax pandas flotando en el fondo
 const BG_PANDAS = [
   { size: 70,  startTop: 12,  amplitudeX: 40, speedX: 0.18, speedY: 0.35, phase: 0,   opacity: 0.09, rotSpeed: 0.03 },
@@ -209,6 +409,7 @@ export default function App() {
         <span style={S.navLogo} onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>🐼 Numa</span>
         <div style={S.navLinks}>
           <a onClick={() => scrollTo("diferente")} style={S.navLink}>Diferente</a>
+          <a onClick={() => scrollTo("capturas")} style={S.navLink}>Capturas</a>
           <a onClick={() => scrollTo("estado")} style={S.navLink}>Mi Estado</a>
           <a onClick={() => scrollTo("crisis")} style={S.navLink}>La Crisis</a>
           <a onClick={() => scrollTo("seguridad")} style={S.navLink}>Seguridad</a>
@@ -284,6 +485,22 @@ export default function App() {
           <p style={S.demoP}>El mismo usuario saluda. Mirá cómo responde cada uno.</p>
           <ChatDemo conversations={CHAT_TONE} tabs={["🐼 Numa", "🤖 ChatGPT"]} />
         </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════ */}
+      {/* CAPTURAS DE LA APP                                     */}
+      {/* ══════════════════════════════════════════════════════ */}
+      <section id="capturas" style={{ ...S.sec, background: "#0a0a0c" }}>
+        <div style={{ ...S.tag, color: "#6EC177" }}>ASÍ SE USA</div>
+        <h2 style={S.title}>
+          Capturas reales<br />
+          del <span style={S.hl}>uso diario</span>
+        </h2>
+        <p style={S.sub}>
+          Así se ve Numa cuando lo abrís a las 3 AM, antes de una reunión,<br />
+          o el domingo mirando tu mes.
+        </p>
+        <PhoneCarousel />
       </section>
 
       {/* ══════════════════════════════════════════════════════ */}
@@ -627,4 +844,49 @@ const S = {
   tlDate: { fontSize: 10.5, color: "#6EC177", fontWeight: 700, letterSpacing: 1.2, marginBottom: 4 },
   tlTitle: { fontSize: 14.5, fontWeight: 700, color: "#fff", marginBottom: 4 },
   tlDesc: { fontSize: 12.5, color: "#999", lineHeight: 1.5, marginBottom: 18 },
+};
+
+// Phone carousel styles
+const PS = {
+  wrap: { display: "flex", gap: 48, alignItems: "center", justifyContent: "center", flexWrap: "wrap", marginTop: 20 },
+  phone: { width: 280, height: 580, borderRadius: 42, background: "#1a1a1c", padding: 10, boxShadow: "0 25px 60px rgba(0,0,0,.5), 0 0 0 2px rgba(255,255,255,.04)", position: "relative", flexShrink: 0 },
+  notch: { position: "absolute", top: 18, left: "50%", transform: "translateX(-50%)", width: 90, height: 22, background: "#000", borderRadius: 14, zIndex: 3 },
+  statusBar: { position: "absolute", top: 18, left: 20, right: 20, display: "flex", justifyContent: "space-between", fontSize: 11, fontWeight: 600, color: "#1f2a22", zIndex: 2, padding: "0 8px" },
+  screen: { width: "100%", height: "100%", borderRadius: 34, background: "linear-gradient(180deg,#dfe9dc 0%,#e8efe5 40%,#d8e3d4 100%)", overflow: "hidden", display: "flex", flexDirection: "column", paddingTop: 48, animation: "fadeIn .4s ease" },
+
+  tabBar: { display: "flex", gap: 4, padding: 4, margin: "0 16px 14px", background: "rgba(255,255,255,.45)", borderRadius: 18 },
+  tab: { flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 4, padding: "7px 4px", fontSize: 11, fontWeight: 600, color: "#6a7a6d", borderRadius: 14 },
+  tabOn: { background: "#fff", color: "#1f2a22", boxShadow: "0 1px 3px rgba(0,0,0,.08)" },
+
+  chatScroll: { flex: 1, padding: "0 16px 16px", overflow: "hidden", display: "flex", flexDirection: "column", gap: 8 },
+  chatTime: { textAlign: "center", fontSize: 10, color: "#6a7a6d", margin: "4px 0" },
+  bubble: { padding: "10px 14px", borderRadius: 16, fontSize: 12.5, lineHeight: 1.45, maxWidth: "85%" },
+  bubbleBot: { background: "#fff", color: "#1f2a22", alignSelf: "flex-start", borderBottomLeftRadius: 4, boxShadow: "0 1px 2px rgba(0,0,0,.04)" },
+  bubbleUser: { background: "#4b5f52", color: "#fff", alignSelf: "flex-end", borderBottomRightRadius: 4 },
+
+  chipsRow: { display: "flex", gap: 6, flexWrap: "wrap", padding: "2px 0" },
+  chip: { padding: "6px 10px", background: "#fff", border: "1px solid #c8d4c6", borderRadius: 20, fontSize: 11, color: "#2d3a32", fontWeight: 500 },
+
+  exerciseCard: { display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", background: "#fff", borderRadius: 14, boxShadow: "0 1px 3px rgba(0,0,0,.06)" },
+  exerciseIcon: { width: 34, height: 34, borderRadius: 10, background: "#e8efe5", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 },
+
+  ringsRow: { display: "flex", gap: 8, background: "#fff", padding: "14px 10px", borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,.05)", marginBottom: 12 },
+  ringCard: { flex: 1, position: "relative", height: 70, display: "flex", alignItems: "center", justifyContent: "center" },
+  ring: { position: "absolute", inset: 0, margin: "auto", width: 66, height: 66, borderRadius: "50%", border: "4px solid", transform: "rotate(-45deg)" },
+  ringInner: { position: "relative", textAlign: "center", zIndex: 1 },
+
+  numaNoto: { background: "#2d3a32", borderRadius: 14, padding: "14px 14px", marginBottom: 12 },
+  momentsBox: { background: "#fff", borderRadius: 14, padding: "14px 14px", boxShadow: "0 1px 3px rgba(0,0,0,.05)" },
+  tlItem: { display: "flex", gap: 10, marginBottom: 10, alignItems: "flex-start" },
+  tlDotSm: { width: 8, height: 8, borderRadius: "50%", marginTop: 5, flexShrink: 0 },
+
+  meta: { maxWidth: 300 },
+  metaTitle: { fontSize: 22, fontWeight: 800, color: "#fff", letterSpacing: -.5, marginBottom: 8 },
+  metaCaption: { fontSize: 14, color: "#aaa", lineHeight: 1.55, marginBottom: 20 },
+  dots: { display: "flex", gap: 8, marginBottom: 16 },
+  dot: { width: 26, height: 4, borderRadius: 2, background: "rgba(255,255,255,.15)", border: "none", cursor: "pointer", padding: 0, transition: "all .3s" },
+  dotOn: { background: "#6EC177", width: 40 },
+  arrows: { display: "flex", alignItems: "center", gap: 14 },
+  arrow: { width: 36, height: 36, borderRadius: "50%", background: "rgba(255,255,255,.04)", border: "1px solid rgba(255,255,255,.1)", color: "#ccc", fontSize: 16, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" },
+  counter: { fontSize: 12, color: "#888", fontWeight: 600, letterSpacing: 1 },
 };

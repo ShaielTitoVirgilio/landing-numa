@@ -408,12 +408,15 @@ export default function App() {
       <nav style={{ ...S.nav, background: scrollY > 50 ? "rgba(10,10,12,.88)" : "transparent", backdropFilter: scrollY > 50 ? "blur(16px)" : "none" }}>
         <span style={S.navLogo} onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>🐼 Numa</span>
         <div style={S.navLinks}>
+          <a onClick={() => scrollTo("funciones")} style={S.navLink}>Funciones</a>
           <a onClick={() => scrollTo("diferente")} style={S.navLink}>Diferente</a>
-          <a onClick={() => scrollTo("capturas")} style={S.navLink}>Capturas</a>
           <a onClick={() => scrollTo("estado")} style={S.navLink}>Mi Estado</a>
           <a onClick={() => scrollTo("crisis")} style={S.navLink}>La Crisis</a>
           <a onClick={() => scrollTo("seguridad")} style={S.navLink}>Seguridad</a>
         </div>
+        <a href="https://web-production-3f4e4.up.railway.app/" target="_blank" rel="noopener noreferrer" style={S.navCTA}>
+          Ir a Numa →
+        </a>
       </nav>
 
       {/* ═══ HERO ═══ */}
@@ -432,6 +435,87 @@ export default function App() {
             Es un compañero que escucha de verdad — entrenado por psicólogos,<br />
             diseñado para los que no tienen dónde ir.
           </p>
+          <a href="https://web-production-3f4e4.up.railway.app/" target="_blank" rel="noopener noreferrer" style={S.heroCTA}>
+            Conoce a Numa →
+          </a>
+          <div style={S.heroCTASub}>Gratis · Disponible ahora</div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════ */}
+      {/* FUNCIONES — QUÉ OFRECE NUMA                           */}
+      {/* ══════════════════════════════════════════════════════ */}
+      <section id="funciones" style={{ ...S.sec, background: "linear-gradient(180deg,#0a0a0c 0%,#0c1410 60%,#0a0a0c 100%)", maxWidth: "100%", padding: "90px 24px" }}>
+        <div style={{ maxWidth: 880, margin: "0 auto" }}>
+          <div style={S.tag}>LO QUE OFRECE NUMA</div>
+          <h2 style={S.title}>
+            Tu compañero emocional,<br />
+            <span style={S.hl}>disponible las 24 horas</span>
+          </h2>
+          <p style={S.sub}>
+            Numa no es una app de meditación ni un chatbot de lista de tips.<br />
+            Es un espacio que te acompaña, te conoce y aprende con vos.
+          </p>
+
+          <div style={S.featGrid}>
+            {[
+              {
+                icon: "🐼",
+                title: "Compañero 24/7",
+                desc: "Numa está cuando más lo necesitás — a las 3 AM, antes de una reunión difícil, o simplemente cuando querés hablar sin juzgar.",
+                color: "#6EC177",
+              },
+              {
+                icon: "🌬️",
+                title: "Ejercicios de respiración",
+                desc: "Técnicas validadas por psicólogos como 4-7-8 y respiración cuadrada. Numa las sugiere en el momento justo según cómo te sentís.",
+                color: "#5A8FB8",
+              },
+              {
+                icon: "🧘",
+                title: "Meditaciones guiadas",
+                desc: "Prácticas cortas y accesibles de mindfulness diseñadas por profesionales. Desde 2 minutos para cuando no tenés tiempo ni energía.",
+                color: "#7B6BE8",
+              },
+              {
+                icon: "💬",
+                title: "Frases que acompañan",
+                desc: "No son citas genéricas de Pinterest. Son mensajes seleccionados por psicólogos para el momento específico que estás viviendo.",
+                color: "#E8A55D",
+              },
+              {
+                icon: "📊",
+                title: "IA que trackea tu mes",
+                desc: "Numa analiza cómo te fuiste sintiendo semana a semana. Ves un resumen de tus días buenos, difíciles y los temas que más aparecieron.",
+                color: "#6EC177",
+              },
+              {
+                icon: "🔍",
+                title: "Patrones que detecta por vos",
+                desc: "Sin que tengas que hacer nada, Numa conecta lo que decís con cómo te sentís. \"Los viernes son tus mejores días\" — ese tipo de insight.",
+                color: "#5A8FB8",
+              },
+              {
+                icon: "🔒",
+                title: "Datos 100% privados",
+                desc: "Tus conversaciones son tuyas. No se usan para entrenar modelos, no se venden, no se comparten. Lo que le decís a Numa, queda en Numa.",
+                color: "#E85D5D",
+              },
+            ].map((f, i) => (
+              <div key={i} style={{ ...S.featCard, borderColor: `${f.color}22` }}>
+                <div style={{ ...S.featIcon, background: `${f.color}12`, color: f.color }}>{f.icon}</div>
+                <div style={S.featTitle}>{f.title}</div>
+                <div style={S.featDesc}>{f.desc}</div>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ textAlign: "center", marginTop: 52 }}>
+            <a href="https://web-production-3f4e4.up.railway.app/" target="_blank" rel="noopener noreferrer" style={S.heroCTA}>
+              Probá Numa gratis →
+            </a>
+            <div style={S.heroCTASub}>Sin descarga · Listo en segundos</div>
+          </div>
         </div>
       </section>
 
@@ -733,7 +817,13 @@ export default function App() {
           pero puede ser lo primero que encuentre alguien<br />
           que busca ayuda a las 3 de la mañana.
         </p>
-        <div style={{ marginTop: 28, padding: "12px 22px", display: "inline-block", background: "rgba(110,193,119,.08)", border: "1px solid rgba(110,193,119,.2)", borderRadius: 12, fontSize: 14, color: "#ccc", position: "relative", zIndex: 1 }}>
+        <div style={{ marginTop: 36, position: "relative", zIndex: 1 }}>
+          <a href="https://web-production-3f4e4.up.railway.app/" target="_blank" rel="noopener noreferrer" style={{ ...S.heroCTA, fontSize: 18, padding: "18px 44px" }}>
+            Conoce a Numa →
+          </a>
+          <div style={{ ...S.heroCTASub, marginTop: 12 }}>Gratis · Disponible ahora</div>
+        </div>
+        <div style={{ marginTop: 32, padding: "12px 22px", display: "inline-block", background: "rgba(110,193,119,.08)", border: "1px solid rgba(110,193,119,.2)", borderRadius: 12, fontSize: 14, color: "#ccc", position: "relative", zIndex: 1 }}>
           📞 Línea de crisis Uruguay: <strong>0800 0767</strong> (gratuito, 24h)
         </div>
       </section>
@@ -835,6 +925,17 @@ const S = {
   patternBadge: { display: "inline-block", fontSize: 9.5, fontWeight: 800, color: "#6EC177", letterSpacing: 1.8, padding: "3px 8px", background: "rgba(110,193,119,.1)", borderRadius: 6, marginBottom: 10 },
   patternTitle: { fontSize: 15, fontWeight: 700, color: "#fff", marginBottom: 6, lineHeight: 1.35 },
   patternDesc: { fontSize: 12.5, color: "#aaa", lineHeight: 1.55 },
+
+  heroCTA: { display: "inline-block", marginTop: 32, padding: "16px 40px", background: "#6EC177", color: "#0a1a0c", fontSize: 16, fontWeight: 800, borderRadius: 50, textDecoration: "none", letterSpacing: -.3, boxShadow: "0 0 32px rgba(110,193,119,.35)", transition: "transform .2s, box-shadow .2s" },
+  heroCTASub: { marginTop: 10, fontSize: 12, color: "#666", letterSpacing: .5 },
+
+  navCTA: { padding: "7px 16px", background: "#6EC177", color: "#0a1a0c", fontSize: 12.5, fontWeight: 700, borderRadius: 20, textDecoration: "none", letterSpacing: -.2, whiteSpace: "nowrap" },
+
+  featGrid: { display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))", gap: 16 },
+  featCard: { background: "rgba(255,255,255,.02)", border: "1px solid rgba(255,255,255,.06)", borderRadius: 16, padding: "24px 20px", transition: "transform .2s" },
+  featIcon: { width: 44, height: 44, borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, marginBottom: 14 },
+  featTitle: { fontSize: 15, fontWeight: 700, color: "#fff", marginBottom: 8, lineHeight: 1.3 },
+  featDesc: { fontSize: 13, color: "#999", lineHeight: 1.6 },
 
   timeline: { maxWidth: 480, margin: "0 auto" },
   tlRow: { display: "flex", gap: 14, paddingBottom: 4 },

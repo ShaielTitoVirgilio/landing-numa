@@ -437,6 +437,19 @@ p { text-wrap: pretty; }
 .foot { padding: 28px 0 40px; border-top: 1px solid var(--line); background: rgba(247, 243, 235, 0.55); }
 .foot__in { display: grid; justify-items: center; gap: 12px; text-align: center; font-size: 14.5px; color: var(--muted); }
 .foot__in img { height: 22px; width: auto; }
+.social { display: flex; gap: 12px; }
+.social a {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid var(--line);
+  color: var(--deep);
+  transition: transform 0.25s ease, background 0.25s ease, color 0.25s ease;
+}
+.social a:hover { transform: translateY(-2px); background: var(--deep); color: #fff; }
 .foot__copy { font-size: 13px; opacity: 0.8; }
 
 /* ─── Animaciones de entrada ──────────────────────────── */

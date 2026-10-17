@@ -5,6 +5,9 @@ const WEB_URL = "https://app.soynuma.app";
 const APP_STORE_URL = "https://apps.apple.com/us/app/numa-app/id6788907827";
 const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=app.numa.mobile";
 
+const INSTAGRAM_URL = "https://www.instagram.com/soynuma.app/";
+const FACEBOOK_URL = "https://www.facebook.com/profile.php?id=61594481690502";
+
 const PRESS = [
   { name: "RadioViva FM", href: "https://radiovivafm.uy/numa/" },
   { name: "El País", href: "https://www.elpais.com.uy/bienestar/mente/dos-hermanos-uruguayos-unieron-la-programacion-y-la-psicopedagogia-para-crear-una-app-que-combate-la-soledad" },
@@ -119,6 +122,24 @@ function Icon({ name }) {
   return (
     <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
       <path d={ICONS[name]} />
+    </svg>
+  );
+}
+
+function InstagramIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
+      <rect x="3.5" y="3.5" width="17" height="17" rx="5" />
+      <circle cx="12" cy="12" r="4" />
+      <circle cx="17.2" cy="6.8" r="0.6" fill="currentColor" />
+    </svg>
+  );
+}
+
+function FacebookIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true" focusable="false">
+      <path d="M14 8h2.5V4.5H14C11.8 4.5 10.5 5.9 10.5 8v2H8v3.5h2.5V20H14v-6.5h2.4l.6-3.5H14V8.7c0-.5.2-.7.7-.7z" />
     </svg>
   );
 }
@@ -480,6 +501,14 @@ export default function App() {
       <footer className="foot">
         <div className="wrap foot__in">
           <img src="/brand/wordmark.png" alt="Numa" width="76" height="21" />
+          <div className="social">
+            <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" aria-label="Numa en Instagram">
+              <InstagramIcon />
+            </a>
+            <a href={FACEBOOK_URL} target="_blank" rel="noopener noreferrer" aria-label="Numa en Facebook">
+              <FacebookIcon />
+            </a>
+          </div>
           <p>Numa no reemplaza la atención profesional. Si estás en peligro, llamá al 911.</p>
           <p className="foot__copy">© 2026 Numa · Hecho en Uruguay</p>
         </div>

@@ -305,7 +305,7 @@ export default function App() {
             <a href="#privacidad">Privacidad</a>
             <a href="#nosotros">Quiénes somos</a>
           </nav>
-          <a className="btn btn--solid btn--sm" href={WEB_URL} target="_blank" rel="noopener noreferrer">
+          <a className="btn btn--solid btn--sm" href="#descargar">
             Ir a Numa
           </a>
         </div>
@@ -357,9 +357,9 @@ export default function App() {
 
           <div className="cards">
             {[
-              { icon: "chat", title: "Charla sin juicios", text: "Contale lo que te pasa, a cualquier hora. Numa escucha primero y responde como una persona, no como un manual." },
               { icon: "heart", title: "Se acuerda de vos", text: "Recuerda tu nombre, tu historia y lo que te importa. Si ayer tenías algo importante, hoy te pregunta cómo te fue." },
               { icon: "wind", title: "Ejercicios para cada momento", text: "Respiración, meditación, yoga y lecturas. Numa te sugiere uno cuando charlan y lo sentís necesario." },
+              { icon: "lock", title: "Es privado", text: "Lo que charlás es tuyo. No vendemos, usamos ni compartimos tu información." },
               { icon: "chart", title: "Tu ritmo, a la vista", text: "Mirá cómo venís sintiéndote semana a semana y qué temas aparecen más seguido." },
             ].map((c, i) => (
               <Reveal key={c.title} delay={i * 70} className="card">
@@ -375,12 +375,12 @@ export default function App() {
         <section className="sec wrap split">
           <Reveal className="split__copy">
             <p className="eyebrow">Una charla de verdad</p>
-            <h2>Reacciona como un amigo, no como un <span className="accent">manual</span></h2>
+            <h2>Numa no reacciona como una <span className="accent">IA genérica</span> más</h2>
             <p className="sub">
               Numa recuerda lo que le contaste y te lo devuelve con cuidado. Sin respuestas armadas ni listas de tips: solo alguien que se queda a escucharte.
             </p>
             <ul className="ticks">
-              <li>Habla en vos, con calidez y sin vueltas.</li>
+              <li>Responde como una persona, no como un manual.</li>
               <li>Está disponible las 24 horas, todos los días.</li>
               <li>Un espacio privado, donde nadie te juzga.</li>
             </ul>
@@ -466,7 +466,7 @@ export default function App() {
               <p className="eyebrow">Quiénes somos</p>
               <h2>Hecha en Uruguay, por dos <span className="accent">hermanos</span></h2>
               <p className="sub">
-                Shaiel desarrolló la tecnología y Giuliana, psicóloga, aporta la mirada clínica. Juntos crearon Numa para que
+                Shaiel desarrolló la tecnología y Giuliana, psicopedagoga, aporta la mirada psicopedagógica. Juntos crearon Numa para que
                 cuidar tu bienestar emocional sea algo simple, humano y cercano.
               </p>
               <p className="press">
@@ -485,7 +485,7 @@ export default function App() {
         </section>
 
         {/* CIERRE */}
-        <section className="wrap closing-wrap">
+        <section id="descargar" className="wrap closing-wrap">
           <Reveal className="closing">
             <img className="closing__mascot" src="/brand/mascota-meditando.png" alt="" width="104" height="128" loading="lazy" />
             <h2>Para sentirte mejor, el primer paso es poder escucharte.</h2>

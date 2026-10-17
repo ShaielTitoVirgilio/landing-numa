@@ -414,7 +414,7 @@ export default function App() {
           <a onClick={() => scrollTo("crisis")} style={S.navLink}>La Crisis</a>
           <a onClick={() => scrollTo("seguridad")} style={S.navLink}>Seguridad</a>
         </div>
-        <a href="https://web-production-3f4e4.up.railway.app/" target="_blank" rel="noopener noreferrer" style={S.navCTA}>
+        <a href="https://app.soynuma.app" target="_blank" rel="noopener noreferrer" style={S.navCTA}>
           Ir a Numa →
         </a>
       </nav>
@@ -435,7 +435,7 @@ export default function App() {
             Es un compañero que escucha de verdad — entrenado por psicólogos,<br />
             diseñado para los que no tienen dónde ir.
           </p>
-          <a href="https://web-production-3f4e4.up.railway.app/" target="_blank" rel="noopener noreferrer" style={S.heroCTA}>
+          <a href="https://app.soynuma.app" target="_blank" rel="noopener noreferrer" style={S.heroCTA}>
             Conoce a Numa →
           </a>
           <div style={S.heroCTASub}>Gratis · Disponible ahora</div>
@@ -511,7 +511,7 @@ export default function App() {
           </div>
 
           <div style={{ textAlign: "center", marginTop: 52 }}>
-            <a href="https://web-production-3f4e4.up.railway.app/" target="_blank" rel="noopener noreferrer" style={S.heroCTA}>
+            <a href="https://app.soynuma.app" target="_blank" rel="noopener noreferrer" style={S.heroCTA}>
               Probá Numa gratis →
             </a>
             <div style={S.heroCTASub}>Sin descarga · Listo en segundos</div>
@@ -818,7 +818,7 @@ export default function App() {
           que busca ayuda a las 3 de la mañana.
         </p>
         <div style={{ marginTop: 36, position: "relative", zIndex: 1 }}>
-          <a href="https://web-production-3f4e4.up.railway.app/" target="_blank" rel="noopener noreferrer" style={{ ...S.heroCTA, fontSize: 18, padding: "18px 44px" }}>
+          <a href="https://app.soynuma.app" target="_blank" rel="noopener noreferrer" style={{ ...S.heroCTA, fontSize: 18, padding: "18px 44px" }}>
             Conoce a Numa →
           </a>
           <div style={{ ...S.heroCTASub, marginTop: 12 }}>Gratis · Disponible ahora</div>

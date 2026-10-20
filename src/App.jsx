@@ -213,7 +213,7 @@ function HangingPanda() {
         src={pose("colgado")}
         alt=""
         width="560"
-        height="847"
+        height="862"
         loading="lazy"
         decoding="async"
         style={{ transformOrigin: "50% 3%" }}

@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
+import { motion, useInView as useViewport, useMotionValue, useReducedMotion, useScroll, useSpring, useTransform } from "motion/react";
 
 // ─── Links ───────────────────────────────────────────────
 const WEB_URL = "https://app.soynuma.app";
@@ -52,17 +53,306 @@ function usePrefersReducedMotion() {
 }
 
 // ─── Pieces ──────────────────────────────────────────────
-function Reveal({ children, delay = 0, as: Tag = "div", className = "", ...rest }) {
-  const [ref, seen] = useInView({ threshold: 0.12 });
+const EASE = [0.2, 0.7, 0.2, 1];
+const SPRING = { type: "spring", stiffness: 260, damping: 20 };
+
+// Entrada del hero: sube y aparece. Con movimiento reducido se muestra directo.
+function useRise() {
+  const reduced = useReducedMotion();
+  return (delay = 0) =>
+    reduced
+      ? {}
+      : {
+          initial: { opacity: 0, y: 14 },
+          animate: { opacity: 1, y: 0 },
+          transition: { duration: 0.9, delay, ease: EASE },
+        };
+}
+
+function Reveal({ children, delay = 0, className = "", ...rest }) {
+  const reduced = useReducedMotion();
   return (
-    <Tag
-      ref={ref}
-      className={`reveal ${seen ? "is-in" : ""} ${className}`}
-      style={{ transitionDelay: `${delay}ms` }}
+    <motion.div
+      className={className}
+      initial={reduced ? false : { opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.12 }}
+      transition={{ duration: 0.9, delay: delay / 1000, ease: EASE }}
       {...rest}
     >
       {children}
-    </Tag>
+    </motion.div>
+  );
+}
+
+// Fondo de manchas: cada capa sube a distinta velocidad al bajar (profundidad).
+function Aura() {
+  const reduced = useReducedMotion();
+  const { scrollY } = useScroll();
+  const slow = useTransform(scrollY, [0, 4000], [0, -220]);
+  const fast = useTransform(scrollY, [0, 4000], [0, -480]);
+  return (
+    <div className="aura" aria-hidden="true">
+      <motion.div className="aura__layer" style={reduced ? undefined : { y: slow }}>
+        <i className="aura__b aura__b--1" />
+        <i className="aura__b aura__b--2" />
+        <i className="aura__b aura__b--5" />
+      </motion.div>
+      <motion.div className="aura__layer" style={reduced ? undefined : { y: fast }}>
+        <i className="aura__b aura__b--3" />
+        <i className="aura__b aura__b--4" />
+      </motion.div>
+    </div>
+  );
+}
+
+const HERO_WORDS = [
+  { t: "Un" },
+  { t: "espacio" },
+  { t: "para" },
+  { t: "escucharte.", accent: true },
+];
+
+// Título que entra palabra por palabra.
+function HeroTitle() {
+  const reduced = useReducedMotion();
+  return (
+    <h1 aria-label="Un espacio para escucharte.">
+      {HERO_WORDS.map((w, i) => (
+        <Fragment key={w.t}>
+          <motion.span
+            className={`word ${w.accent ? "accent" : ""}`}
+            aria-hidden="true"
+            initial={reduced ? false : { opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, delay: 0.12 + i * 0.1, ease: EASE }}
+          >
+            {w.t}
+          </motion.span>
+          {i < HERO_WORDS.length - 1 && " "}
+        </Fragment>
+      ))}
+    </h1>
+  );
+}
+
+function FloatBubble({ className, delay, dur, children }) {
+  const reduced = useReducedMotion();
+  return (
+    <motion.div
+      className={`float-bubble ${className}`}
+      aria-hidden="true"
+      initial={reduced ? false : { opacity: 0, y: 8 }}
+      animate={reduced ? { opacity: 1 } : { opacity: 1, y: [8, -6] }}
+      transition={{
+        opacity: { duration: 0.9, delay },
+        y: { duration: dur, delay, repeat: Infinity, repeatType: "mirror", ease: "easeInOut" },
+      }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+// Panda del hero: sigue apenas al cursor y sube más lento que la página al bajar.
+function HeroArt({ rise }) {
+  const reduced = useReducedMotion();
+  const mx = useMotionValue(0);
+  const my = useMotionValue(0);
+  const follow = { stiffness: 60, damping: 18 };
+  const x = useSpring(useTransform(mx, [-1, 1], [-12, 12]), follow);
+  const y = useSpring(useTransform(my, [-1, 1], [-9, 9]), follow);
+  const rotate = useSpring(useTransform(mx, [-1, 1], [-2.5, 2.5]), follow);
+  const { scrollY } = useScroll();
+  const lift = useTransform(scrollY, [0, 700], [0, -80]);
+
+  useEffect(() => {
+    if (reduced || !window.matchMedia("(pointer: fine)").matches) return;
+    const h = (e) => {
+      mx.set((e.clientX / window.innerWidth) * 2 - 1);
+      my.set((e.clientY / window.innerHeight) * 2 - 1);
+    };
+    window.addEventListener("pointermove", h, { passive: true });
+    return () => window.removeEventListener("pointermove", h);
+  }, [reduced, mx, my]);
+
+  return (
+    <motion.div className="hero__art" {...rise(0.16)}>
+      <div className="hero__glow" aria-hidden="true" />
+      <motion.div className="hero__mascot-wrap" style={reduced ? undefined : { y: lift }}>
+        <motion.div style={reduced ? undefined : { x, y, rotate }}>
+          <img className="hero__mascot" src="/brand/mascota.png" alt="Numa, el panda que te acompaña" width="420" height="523" />
+        </motion.div>
+      </motion.div>
+      <FloatBubble className="float-bubble--a" delay={1.1} dur={5.5}>Hola, ¿cómo venís hoy?</FloatBubble>
+      <FloatBubble className="float-bubble--b" delay={2.1} dur={7}>Contame, acá tengo todo el tiempo.</FloatBubble>
+    </motion.div>
+  );
+}
+
+// ─── Poses del panda ─────────────────────────────────────
+// Las animaciones infinitas solo corren mientras la pose está en pantalla.
+const pose = (name) => `/brand/poses/${name}.webp`;
+const LOOP = { repeat: Infinity, repeatType: "mirror", ease: "easeInOut" };
+
+// Colgado de la "v" de "vos": cuelga de una barra bajo la palabra y se balancea.
+function HangingPanda() {
+  const reduced = useReducedMotion();
+  const ref = useRef(null);
+  const inView = useViewport(ref, { margin: "0px 0px -10% 0px" });
+  return (
+    <motion.span
+      ref={ref}
+      className="hang__panda"
+      aria-hidden="true"
+      initial={reduced ? false : { opacity: 0, y: -22 }}
+      animate={inView || reduced ? { opacity: 1, y: 0 } : undefined}
+      transition={{ type: "spring", stiffness: 90, damping: 14, delay: 0.25 }}
+    >
+      <motion.img
+        src={pose("colgado")}
+        alt=""
+        width="560"
+        height="862"
+        loading="lazy"
+        decoding="async"
+        style={{ transformOrigin: "50% 3%" }}
+        animate={inView && !reduced ? { rotate: [-4, 4] } : { rotate: 0 }}
+        transition={inView && !reduced ? { duration: 3.4, ...LOOP } : { duration: 0.4 }}
+      />
+    </motion.span>
+  );
+}
+
+// Asomado sobre el borde de las tarjetas: sube al entrar y mueve apenas la cabeza.
+function PeekingPanda() {
+  const reduced = useReducedMotion();
+  const ref = useRef(null);
+  const inView = useViewport(ref, { margin: "0px 0px -15% 0px" });
+  return (
+    <motion.div
+      ref={ref}
+      className="peek"
+      aria-hidden="true"
+      initial={reduced ? false : { opacity: 0, y: 46 }}
+      animate={inView || reduced ? { opacity: 1, y: 0 } : undefined}
+      transition={{ type: "spring", stiffness: 80, damping: 15, delay: 0.2 }}
+    >
+      <motion.img
+        src={pose("asomado")}
+        alt=""
+        width="720"
+        height="733"
+        loading="lazy"
+        decoding="async"
+        style={{ transformOrigin: "50% 90%" }}
+        animate={inView && !reduced ? { rotate: [-2.5, 2.5] } : { rotate: 0 }}
+        transition={inView && !reduced ? { duration: 4.2, ...LOOP } : { duration: 0.4 }}
+      />
+    </motion.div>
+  );
+}
+
+// Con el celular, en la esquina del chat de ejemplo.
+function ChatPanda() {
+  const reduced = useReducedMotion();
+  const ref = useRef(null);
+  const inView = useViewport(ref, { margin: "0px 0px -10% 0px" });
+  return (
+    <motion.div
+      ref={ref}
+      className="chat-panda"
+      aria-hidden="true"
+      initial={reduced ? false : { opacity: 0, scale: 0.85 }}
+      animate={inView || reduced ? { opacity: 1, scale: 1 } : undefined}
+      transition={{ type: "spring", stiffness: 100, damping: 14, delay: 0.9 }}
+    >
+      <motion.img
+        src={pose("celular")}
+        alt=""
+        width="640"
+        height="802"
+        loading="lazy"
+        decoding="async"
+        animate={inView && !reduced ? { y: [0, -6], rotate: [-2, 2] } : { y: 0, rotate: 0 }}
+        transition={inView && !reduced ? { duration: 3.2, ...LOOP } : { duration: 0.4 }}
+      />
+    </motion.div>
+  );
+}
+
+// Abrazando un corazón, sentado sobre el panel de privacidad: late despacio.
+function HeartPanda() {
+  const reduced = useReducedMotion();
+  const ref = useRef(null);
+  const inView = useViewport(ref, { margin: "0px 0px -10% 0px" });
+  return (
+    <motion.div
+      ref={ref}
+      className="sit"
+      aria-hidden="true"
+      initial={reduced ? false : { opacity: 0, y: 24 }}
+      animate={inView || reduced ? { opacity: 1, y: 0 } : undefined}
+      transition={{ type: "spring", stiffness: 90, damping: 15, delay: 0.3 }}
+    >
+      <motion.img
+        src={pose("corazon")}
+        alt=""
+        width="640"
+        height="798"
+        loading="lazy"
+        decoding="async"
+        style={{ transformOrigin: "50% 100%" }}
+        animate={inView && !reduced ? { scale: [1, 1.04, 1, 1.025, 1] } : { scale: 1 }}
+        transition={inView && !reduced ? { duration: 2.8, times: [0, 0.14, 0.3, 0.44, 1], repeat: Infinity, ease: "easeInOut" } : { duration: 0.4 }}
+      />
+    </motion.div>
+  );
+}
+
+// Saludando: alterna dos cuadros (brazo arriba / a medias) y descansa entre saludos.
+const WAVE = [1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0];
+function WavingPanda() {
+  const reduced = useReducedMotion();
+  const ref = useRef(null);
+  const inView = useViewport(ref, { margin: "0px 0px -10% 0px" });
+  const [step, setStep] = useState(0);
+  useEffect(() => {
+    if (reduced || !inView) return;
+    const id = setInterval(() => setStep((s) => (s + 1) % WAVE.length), 380);
+    return () => clearInterval(id);
+  }, [reduced, inView]);
+  const raised = reduced ? true : WAVE[step] === 1;
+  return (
+    <div ref={ref} className="wave" aria-hidden="true">
+      <img src={pose("saludo-a")} alt="" width="560" height="603" loading="lazy" decoding="async" style={{ opacity: raised ? 1 : 0 }} />
+      <img src={pose("saludo-b")} alt="" width="560" height="603" loading="lazy" decoding="async" style={{ opacity: raised ? 0 : 1 }} />
+    </div>
+  );
+}
+
+// Tarjeta: entra en cascada y se levanta apenas al pasar el mouse.
+function FeatureCard({ icon, title, text, i }) {
+  const reduced = useReducedMotion();
+  return (
+    <motion.div
+      className="card"
+      initial={reduced ? false : "hidden"}
+      whileInView="show"
+      whileHover={reduced ? undefined : "hover"}
+      viewport={{ once: true, amount: 0.2 }}
+      variants={{
+        hidden: { opacity: 0, y: 22 },
+        show: { opacity: 1, y: 0, transition: { duration: 0.9, delay: i * 0.09, ease: EASE } },
+        hover: { y: -6, transition: SPRING },
+      }}
+    >
+      <motion.span className="card__icon" variants={{ hover: { scale: 1.1, rotate: -4, transition: SPRING } }}>
+        <Icon name={icon} />
+      </motion.span>
+      <h3>{title}</h3>
+      <p>{text}</p>
+    </motion.div>
   );
 }
 
@@ -144,11 +434,38 @@ function FacebookIcon() {
   );
 }
 
-function PhoneFrame({ src, alt, className = "" }) {
+function PhoneFrame({ src, alt, className = "", style }) {
   return (
-    <figure className={`phone ${className}`}>
+    <motion.figure className={`phone ${className}`} style={style}>
       <img src={src} alt={alt} loading="lazy" />
-    </figure>
+    </motion.figure>
+  );
+}
+
+// Los dos teléfonos llegan desde abajo y se acomodan al pasar por pantalla.
+function ExercisePhones() {
+  const reduced = useReducedMotion();
+  const ref = useRef(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const yBack = useTransform(scrollYProgress, [0, 0.5, 1], [50, 0, -30]);
+  const yFront = useTransform(scrollYProgress, [0, 0.5, 1], [100, 0, -60]);
+  const rBack = useTransform(scrollYProgress, [0, 0.5, 1], [-8, -4, -2]);
+  const rFront = useTransform(scrollYProgress, [0, 0.5, 1], [7, 3, 1]);
+  return (
+    <Reveal ref={ref} className="ex__phones" delay={80}>
+      <PhoneFrame
+        src="/app/ejercicios.jpg"
+        alt="Pantalla de ejercicios de la app: respiración, meditación, yoga y lecturas."
+        className="phone--back"
+        style={reduced ? { rotate: -4 } : { y: yBack, rotate: rBack }}
+      />
+      <PhoneFrame
+        src="/app/respiracion-478.jpg"
+        alt="Ejercicio de respiración 4-7-8 dentro de la app."
+        className="phone--front"
+        style={reduced ? { rotate: 3 } : { y: yFront, rotate: rFront }}
+      />
+    </Reveal>
   );
 }
 
@@ -256,6 +573,19 @@ function BreathingDemo() {
 
   return (
     <div className="breath">
+      <motion.img
+        className="breath__panda"
+        src={pose("meditando")}
+        alt=""
+        aria-hidden="true"
+        width="320"
+        height="393"
+        loading="lazy"
+        decoding="async"
+        style={{ transformOrigin: "50% 100%" }}
+        animate={reduced ? undefined : running ? { scale: expanded ? 1.08 : 0.96 } : { scale: [1, 1.035] }}
+        transition={running ? { duration: dur, ease: "easeInOut" } : { duration: 3.6, ...LOOP }}
+      />
       <div className="breath__stage">
         <div className="breath__halo" style={{ transform: `scale(${scale})`, transitionDuration: `${dur}s` }} />
         <div className="breath__circle" style={{ transform: `scale(${scale})`, transitionDuration: `${dur}s` }}>
@@ -276,6 +606,7 @@ function BreathingDemo() {
 // ─── App ─────────────────────────────────────────────────
 export default function App() {
   const [scrolled, setScrolled] = useState(false);
+  const rise = useRise();
   useEffect(() => {
     const h = () => setScrolled(window.scrollY > 24);
     h();
@@ -285,14 +616,7 @@ export default function App() {
 
   return (
     <>
-      <div className="aura" aria-hidden="true">
-        <i className="aura__b aura__b--1" />
-        <i className="aura__b aura__b--2" />
-        <i className="aura__b aura__b--3" />
-        <i className="aura__b aura__b--4" />
-        <i className="aura__b aura__b--5" />
-      </div>
-
+      <Aura />
       {/* NAV */}
       <header className={`nav ${scrolled ? "nav--solid" : ""}`}>
         <div className="wrap nav__in">
@@ -315,18 +639,16 @@ export default function App() {
         {/* HERO */}
         <section className="hero wrap">
           <div className="hero__copy">
-            <p className="chip fade-up" style={{ animationDelay: "40ms" }}>
+            <motion.p className="chip" {...rise(0.04)}>
               <span className="chip__dot" />
               Ya disponible en iOS y Android
-            </p>
-            <h1 className="fade-up" style={{ animationDelay: "120ms" }}>
-              Un espacio para <span className="accent">escucharte.</span>
-            </h1>
-            <p className="lead fade-up" style={{ animationDelay: "200ms" }}>
+            </motion.p>
+            <HeroTitle />
+            <motion.p className="lead" {...rise(0.5)}>
               Numa te acompaña a poner en palabras lo que sentís, reconocer tus emociones y conocerte mejor.
               Sin juicios, a la hora que sea.
-            </p>
-            <div className="fade-up" style={{ animationDelay: "280ms" }}>
+            </motion.p>
+            <motion.div {...rise(0.62)}>
               <StoreButtons />
               <p className="hero__web">
                 ¿Preferís no descargar nada?{" "}
@@ -334,40 +656,36 @@ export default function App() {
                   Conoce a Numa desde el navegador →
                 </a>
               </p>
-            </div>
+            </motion.div>
           </div>
 
-          <div className="hero__art fade-up" style={{ animationDelay: "160ms" }}>
-            <div className="hero__glow" aria-hidden="true" />
-            <img className="hero__mascot" src="/brand/mascota.png" alt="Numa, el panda que te acompaña" width="420" height="523" />
-            <div className="float-bubble float-bubble--a" aria-hidden="true">Hola, ¿cómo venís hoy?</div>
-            <div className="float-bubble float-bubble--b" aria-hidden="true">Contame, acá tengo todo el tiempo.</div>
-          </div>
+          <HeroArt rise={rise} />
         </section>
 
         {/* CÓMO TE ACOMPAÑA */}
         <section id="acompana" className="sec wrap">
           <Reveal className="sec__head">
             <p className="eyebrow">Cómo te acompaña</p>
-            <h2>Alguien que se acuerda de <span className="accent">vos</span></h2>
+            <h2 className="hang-title">
+              Alguien que se acuerda de <span className="accent hang">vos<HangingPanda /></span>
+            </h2>
             <p className="sub">
               Numa no es una lista de consejos. Es un lugar tranquilo para charlar, respirar y entender un poco mejor cómo venís.
             </p>
           </Reveal>
 
-          <div className="cards">
+          <div className="cards-wrap">
+            <PeekingPanda />
+            <div className="cards">
             {[
               { icon: "heart", title: "Se acuerda de vos", text: "Recuerda tu nombre, tu historia y lo que te importa. Si ayer tenías algo importante, hoy te pregunta cómo te fue." },
               { icon: "wind", title: "Ejercicios para cada momento", text: "Respiración, meditación, yoga y lecturas. Numa te sugiere uno cuando charlan y lo sentís necesario." },
               { icon: "lock", title: "Es privado", text: "Lo que charlás es tuyo. No vendemos, usamos ni compartimos tu información." },
               { icon: "chart", title: "Tu ritmo, a la vista", text: "Mirá cómo venís sintiéndote semana a semana y qué temas aparecen más seguido." },
             ].map((c, i) => (
-              <Reveal key={c.title} delay={i * 70} className="card">
-                <span className="card__icon"><Icon name={c.icon} /></span>
-                <h3>{c.title}</h3>
-                <p>{c.text}</p>
-              </Reveal>
+              <FeatureCard key={c.title} i={i} {...c} />
             ))}
+            </div>
           </div>
         </section>
 
@@ -386,7 +704,10 @@ export default function App() {
             </ul>
           </Reveal>
           <Reveal className="split__art" delay={120}>
-            <ChatDemo />
+            <div className="chat-wrap">
+              <ChatDemo />
+              <ChatPanda />
+            </div>
           </Reveal>
         </section>
 
@@ -401,10 +722,7 @@ export default function App() {
           </Reveal>
 
           <div className="ex">
-            <Reveal className="ex__phones" delay={80}>
-              <PhoneFrame src="/app/ejercicios.jpg" alt="Pantalla de ejercicios de la app: respiración, meditación, yoga y lecturas." className="phone--back" />
-              <PhoneFrame src="/app/respiracion-478.jpg" alt="Ejercicio de respiración 4-7-8 dentro de la app." className="phone--front" />
-            </Reveal>
+            <ExercisePhones />
             <Reveal className="ex__demo" delay={160}>
               <div className="panel">
                 <BreathingDemo />
@@ -428,6 +746,7 @@ export default function App() {
 
           <div className="duo">
             <Reveal className="panel panel--lock" delay={60}>
+              <HeartPanda />
               <span className="card__icon"><Icon name="lock" /></span>
               <h3>Lo que charlás queda con Numa</h3>
               <p>
@@ -461,7 +780,7 @@ export default function App() {
         {/* NOSOTROS */}
         <section id="nosotros" className="sec wrap">
           <Reveal className="about">
-            <img className="about__mascot" src="/brand/mascota-meditando.png" alt="" width="190" height="233" loading="lazy" />
+            <img className="about__mascot" src={pose("mate")} alt="" width="640" height="801" loading="lazy" decoding="async" />
             <div>
               <p className="eyebrow">Quiénes somos</p>
               <h2>Hecha en Uruguay, por dos <span className="accent">hermanos</span></h2>
@@ -487,7 +806,7 @@ export default function App() {
         {/* CIERRE */}
         <section id="descargar" className="wrap closing-wrap">
           <Reveal className="closing">
-            <img className="closing__mascot" src="/brand/mascota-meditando.png" alt="" width="104" height="128" loading="lazy" />
+            <WavingPanda />
             <h2>Para sentirte mejor, el primer paso es poder escucharte.</h2>
             <p>Numa te espera, a la hora que sea.</p>
             <StoreButtons align="center" />
